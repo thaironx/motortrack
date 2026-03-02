@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MotorTrack — Manutenção Industrial</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">MotorTrack</div>
+    <div class="login-sub">Sistema de Manutenção Industrial Interna</div>
+
+    <div class="field-group">
+      <label>E-mail</label>
+      <input type="email" id="campo-email" placeholder="usuario@empresa.com" autocomplete="username">
+    </div>
+    <div class="field-group">
+      <label>Senha</label>
+      <input type="password" id="campo-senha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div id="login-erro"></div>
+    <hr class="login-divider">
+    <button class="btn-primary" id="btn-login">ENTRAR</button>
+
+    <p style="font-family:var(--mono);font-size:10px;color:var(--text2);text-align:center;margin-top:20px;">
+      SENAI Ipatinga — CFP Rinaldo Campos Soares
+    </p>
+  </div>
+</div>
+
+<div id="app">
+
+  <nav class="topbar">
+    <div class="topbar-logo">⚙ MotorTrack</div>
+    <div class="topbar-nav">
+      <button class="nav-btn active" data-page="dashboard" onclick="App.navegarPara('dashboard')">Dashboard</button>
+      <button class="nav-btn"        data-page="motores"   onclick="App.navegarPara('motores')">Chamados</button>
+      <button class="nav-btn" id="menu-usuarios"           onclick="App.navegarPara('usuarios')" style="display:none;">Usuários</button>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle" id="themeToggle"></button>
+      <div class="user-info">
+        <span class="user-nome"  id="user-nome">—</span>
+        <span class="user-setor" id="user-setor">—</span>
+      </div>
+      <button class="logout-btn" onclick="App.fazerLogout()">Sair</button>
+    </div>
+  </nav>
+
+  <main class="page active" id="page-dashboard">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Manutenção interna — visão geral em tempo real</div>
+
+    <div class="stats-grid">
+      <div class="stat-card s-total">
+        <div class="stat-icon">📋</div>
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">Total de Chamados</div>
+      </div>
+      <div class="stat-card s-ok">
+        <div class="stat-icon">⚙</div>
+        <div class="stat-num" id="stat-andamento">0</div>
+        <div class="stat-label">Em Andamento</div>
+      </div>
+      <div class="stat-card s-alerta">
+        <div class="stat-icon">⚠</div>
+        <div class="stat-num" id="stat-alerta">0</div>
+        <div class="stat-label">No Prazo / Atrasados</div>
+      </div>
+      <div class="stat-card s-atrasado">
+        <div class="stat-icon">🚨</div>
+        <div class="stat-num" id="stat-urgente">0</div>
+        <div class="stat-label">Urgentes</div>
+      </div>
+    </div>
+
+    <div class="pipeline-section">
+      <div class="pipeline-title">▶ Pipeline de Manutenção — motores em cada etapa</div>
+      <div class="pipeline">
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#60a0ff;"></div>
+          <div class="pipeline-col-label">Entrada</div>
+          <div class="pipeline-col-count" id="pipe-entrada_manutencao">0</div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#f0a500;"></div>
+          <div class="pipeline-col-label">Análise Técnica</div>
+          <div class="pipeline-col-count" id="pipe-analise_tecnica">0</div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#c060ff;"></div>
+          <div class="pipeline-col-label">Diagnóstico</div>
+          <div class="pipeline-col-count" id="pipe-diagnostico">0</div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#ff9040;"></div>
+          <div class="pipeline-col-label">Aguard. Peças</div>
+          <div class="pipeline-col-count" id="pipe-aguardando_pecas">0</div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#ff6060;"></div>
+          <div class="pipeline-col-label">Em Reparo</div>
+          <div class="pipeline-col-count" id="pipe-em_reparo">0</div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#40d0ff;"></div>
+          <div class="pipeline-col-label">Teste Final</div>
+          <div class="pipeline-col-count" id="pipe-teste_final">0</div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-bar" style="background:#00c97a;"></div>
+          <div class="pipeline-col-label">Concluído</div>
+          <div class="pipeline-col-count" id="pipe-concluido">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <div class="table-header">
+        <div class="table-header-title">Chamados Recentes</div>
+        <button class="btn-secondary" onclick="App.navegarPara('motores')">Ver todos →</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Código OS</th><th>Motor / Tag</th><th>Setor de Origem</th>
+          <th>Etapa Atual</th><th>Prioridade</th><th>Prazo</th>
+          <th>Status Prazo</th><th>Situação</th><th>Ações</th>
+        </tr></thead>
+        <tbody id="tbody-recentes">
+          <tr><td colspan="9" class="empty-row">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <main class="page" id="page-motores">
+    <div class="page-title">Chamados de Manutenção</div>
+    <div class="page-sub">Todos os motores em processo interno</div>
+
+    <div class="table-wrapper">
+      <div class="table-header">
+        <div class="table-header-title">Todos os Chamados</div>
+        <div class="table-filters">
+          <input type="text" id="filtro-busca"
+            placeholder="Código, modelo, tag, setor..."
+            oninput="Dashboard.renderizarTabelaMotores()">
+          <select id="filtro-etapa" onchange="Dashboard.renderizarTabelaMotores()">
+            <option value="">Todas as etapas</option>
+            <option value="entrada_manutencao">Entrada na Manutenção</option>
+            <option value="analise_tecnica">Análise Técnica</option>
+            <option value="diagnostico">Diagnóstico</option>
+            <option value="aguardando_pecas">Aguardando Peças</option>
+            <option value="em_reparo">Em Reparo</option>
+            <option value="teste_final">Teste Final</option>
+            <option value="concluido">Concluído</option>
+          </select>
+          <select id="filtro-origem" onchange="Dashboard.renderizarTabelaMotores()">
+            <option value="">Todos os setores</option>
+            <option value="usinagem">Usinagem</option>
+            <option value="producao">Produção</option>
+            <option value="compressores">Compressores</option>
+            <option value="caldeiraria">Caldeiraria</option>
+            <option value="utilidades">Utilidades</option>
+            <option value="extrusao">Extrusão</option>
+            <option value="outro">Outro</option>
+          </select>
+          <select id="filtro-prioridade" onchange="Dashboard.renderizarTabelaMotores()">
+            <option value="">Toda prioridade</option>
+            <option value="urgente">Urgente</option>
+            <option value="alta">Alta</option>
+            <option value="normal">Normal</option>
+            <option value="baixa">Baixa</option>
+          </select>
+          <select id="filtro-status" onchange="Dashboard.renderizarTabelaMotores()">
+            <option value="">Todos</option>
+            <option value="em_andamento">Em andamento</option>
+            <option value="concluido">Concluído</option>
+          </select>
+          <button class="btn-success" onclick="App.abrirCadastro()">+ Novo Chamado</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Código OS</th><th>Motor / Tag</th><th>Setor de Origem</th>
+          <th>Etapa Atual</th><th>Prioridade</th><th>Prazo</th>
+          <th>Status Prazo</th><th>Situação</th><th>Ações</th>
+        </tr></thead>
+        <tbody id="tbody-motores">
+          <tr><td colspan="9" class="empty-row">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <main class="page" id="page-usuarios">
+    <div class="page-title">Usuários</div>
+    <div class="page-sub">Gerenciar contas de acesso</div>
+    <div class="table-wrapper">
+      <div class="table-header">
+        <div class="table-header-title">Usuários do Sistema</div>
+        <button class="btn-success" onclick="App.abrirCriarUsuario()">+ Novo Usuário</button>
+      </div>
+      <table>
+        <thead><tr><th>Nome</th><th>E-mail</th><th>Setor</th></tr></thead>
+        <tbody id="tbody-usuarios">
+          <tr><td colspan="3" class="empty-row">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</div>
+
+<div class="modal-overlay" id="modal-cadastro">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">Novo Chamado de Manutenção</span>
+      <button class="modal-close" onclick="App.fecharModal('modal-cadastro')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-section-title">Identificação do Motor</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Tag / Nº Patrimônio</label>
+          <input type="text" id="cad-tag" placeholder="Ex: MTR-0042 ou 18523">
+        </div>
+        <div class="field-group">
+          <label>Modelo do Motor *</label>
+          <input type="text" id="cad-modelo" placeholder="Ex: WEG W22 IR3 15CV">
+        </div>
+        <div class="field-group">
+          <label>Potência</label>
+          <input type="text" id="cad-potencia" placeholder="Ex: 15 CV / 11 kW">
+        </div>
+        <div class="field-group">
+          <label>Tensão</label>
+          <input type="text" id="cad-tensao" placeholder="Ex: 380V / 220V">
+        </div>
+        <div class="field-group">
+          <label>Rotação (RPM)</label>
+          <input type="text" id="cad-rpm" placeholder="Ex: 1750">
+        </div>
+      </div>
+
+      <div class="form-section-title" style="margin-top:20px;">Origem e Problema</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Setor de Origem *</label>
+          <select id="cad-setororigem">
+            <option value="">Selecione o setor...</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Local de Instalação</label>
+          <input type="text" id="cad-local" placeholder="Ex: Linha 3 — Torno CNC 02">
+        </div>
+        <div class="field-group full">
+          <label>Problema Relatado pelo Operador *</label>
+          <textarea id="cad-problema" placeholder="Descreva o que foi observado: ruído, superaquecimento, vibração excessiva, parada súbita, etc."></textarea>
+        </div>
+        <div class="field-group">
+          <label>Prioridade</label>
+          <select id="cad-prioridade">
+            <option value="baixa">Baixa</option>
+            <option value="normal" selected>Normal</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">🚨 Urgente</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Data de Entrada na Manutenção</label>
+          <input type="date" id="cad-dataentrada">
+        </div>
+        <div class="field-group">
+          <label>Prazo para Retorno ao Setor</label>
+          <input type="date" id="cad-prazo">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="App.fecharModal('modal-cadastro')">Cancelar</button>
+        <button class="btn-success" id="btn-salvar-cadastro" onclick="App.salvarCadastro()">Abrir Chamado</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-detalhe">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-detalhe-titulo">—</span>
+      <button class="modal-close" onclick="App.fecharModal('modal-detalhe')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-detalhe-body">Carregando...</div>
+      <div class="form-actions" style="margin-top:24px;">
+        <button class="btn-secondary" onclick="App.fecharModal('modal-detalhe')">Fechar</button>
+        <button class="btn-success" id="btn-registrar-detalhe" onclick="App.abrirAcaoDeDetalhe()" style="display:none;">
+          Registrar Próxima Etapa →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-acao">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <span class="modal-title" id="modal-acao-titulo">Registrar</span>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-top:2px;">
+          Etapa atual: <span id="acao-etapa-atual">—</span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="App.fecharModal('modal-acao')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="acao-form" id="form-avancar" style="display:none;">
+        <div class="field-group">
+          <label>Próxima Etapa *</label>
+          <select id="avancar-proxima-etapa"></select>
+        </div>
+        <div class="field-group">
+          <label>Observações</label>
+          <textarea id="avancar-obs" placeholder="Descreva o que foi feito ou o motivo da movimentação..."></textarea>
+        </div>
+      </div>
+
+      <div class="acao-form" id="form-diagnostico" style="display:none;">
+        <div class="form-section-title">Resultado da Análise Técnica</div>
+        <div class="form-grid">
+          <div class="field-group full">
+            <label>Causa Raiz do Problema *</label>
+            <textarea id="diag-causa" placeholder="Descreva tecnicamente a causa identificada: rolamento danificado, enrolamento queimado, eixo quebrado, etc."></textarea>
+          </div>
+          <div class="field-group">
+            <label>Tipo de Falha *</label>
+            <select id="diag-tipo">
+              <option value="">Selecione...</option>
+              <option value="Mecânica">Mecânica</option>
+              <option value="Elétrica">Elétrica</option>
+              <option value="Mecânica e Elétrica">Mecânica e Elétrica</option>
+              <option value="Contaminação / Sujeira">Contaminação / Sujeira</option>
+              <option value="Sobrecarga">Sobrecarga</option>
+              <option value="Superaquecimento">Superaquecimento</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Necessita Reparo? *</label>
+            <select id="diag-necessita">
+              <option value="">Selecione...</option>
+              <option value="sim">Sim — reparo necessário</option>
+              <option value="nao">Não — apenas limpeza/ajuste</option>
+            </select>
+          </div>
+          <div class="field-group full">
+            <label>Peças / Componentes Necessários</label>
+            <input type="text" id="diag-pecas" placeholder="Ex: 2x Rolamento 6205, 1x Retentor 25x42x7">
+          </div>
+          <div class="field-group">
+            <label>Estimativa de Prazo (dias)</label>
+            <input type="number" id="diag-estimativa" placeholder="Ex: 3" min="0">
+          </div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:20px;">Medições Elétricas / Mecânicas</div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Resistência de Isolamento (MΩ)</label>
+            <input type="text" id="diag-ri" placeholder="Ex: 8.2">
+          </div>
+          <div class="field-group">
+            <label>Resistência de Enrolamento (Ω)</label>
+            <input type="text" id="diag-re" placeholder="Ex: 2.4">
+          </div>
+          <div class="field-group">
+            <label>Corrente Medida (A)</label>
+            <input type="text" id="diag-corrente" placeholder="Ex: 28.5">
+          </div>
+          <div class="field-group">
+            <label>Temperatura (°C)</label>
+            <input type="text" id="diag-temp" placeholder="Ex: 72">
+          </div>
+          <div class="field-group">
+            <label>Vibração</label>
+            <input type="text" id="diag-vib" placeholder="Ex: 3.2">
+          </div>
+          <div class="field-group">
+            <label>Unidade Vibração</label>
+            <select id="diag-unidade">
+              <option value="mm/s">mm/s</option>
+              <option value="m/s²">m/s²</option>
+            </select>
+          </div>
+          <div class="field-group full">
+            <label>Observações das Medições</label>
+            <textarea id="diag-obs" placeholder="Observações adicionais sobre as medições..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="acao-form" id="form-reparo" style="display:none;">
+        <div class="form-section-title">Registro do Reparo</div>
+        <div class="field-group">
+          <label>Tipos de Intervenção (selecione todos que se aplicam)</label>
+          <div id="tipos-reparo-checks" class="check-grid"></div>
+        </div>
+        <div class="field-group">
+          <label>Descrição do Serviço Executado *</label>
+          <textarea id="rep-descricao" placeholder="Descreva detalhadamente o que foi feito: procedimento, método de reparo, ajustes, etc."></textarea>
+        </div>
+        <div class="field-group">
+          <label>Peças e Componentes Utilizados</label>
+          <textarea id="rep-pecas" placeholder="Liste as peças substituídas: quantidade, código, especificação..."></textarea>
+        </div>
+      </div>
+
+      <div class="acao-form" id="form-teste" style="display:none;">
+        <div class="form-section-title">Resultado do Teste Final</div>
+        <div class="form-grid">
+          <div class="field-group full">
+            <label>Resultado *</label>
+            <select id="teste-resultado">
+              <option value="">Selecione o resultado...</option>
+              <option value="aprovado">✔ Aprovado — motor apto para retorno ao setor</option>
+              <option value="reprovado_sucateado">✘ Reprovado — motor sucateado / descartado</option>
+              <option value="substituido">↺ Motor substituído por unidade nova</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Vibração Final</label>
+            <input type="text" id="teste-vib" placeholder="Ex: 1.8">
+          </div>
+          <div class="field-group">
+            <label>Unidade</label>
+            <select id="teste-unidade">
+              <option value="mm/s">mm/s</option>
+              <option value="m/s²">m/s²</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Temperatura Final (°C)</label>
+            <input type="text" id="teste-temp" placeholder="Ex: 58">
+          </div>
+          <div class="field-group">
+            <label>Corrente Final (A)</label>
+            <input type="text" id="teste-corrente" placeholder="Ex: 27.1">
+          </div>
+          <div class="field-group full">
+            <label>Observações Finais</label>
+            <textarea id="teste-obs" placeholder="Condições do teste, parecer técnico final, recomendações..."></textarea>
+          </div>
+        </div>
+        <div class="retorno-banner">
+          <span>📦</span>
+          <span>Ao salvar o resultado, o chamado será concluído e o motor registrado como retornado ao setor de origem.</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="App.fecharModal('modal-acao')">Cancelar</button>
+        <button class="btn-success" id="btn-salvar-acao" onclick="App.salvarAcao()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal" style="width:440px;">
+    <div class="modal-header">
+      <span class="modal-title">Novo Usuário</span>
+      <button class="modal-close" onclick="App.fecharModal('modal-usuario')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="usr-nome" placeholder="Ex: Carlos Andrade">
+      </div>
+      <div class="field-group">
+        <label>E-mail *</label>
+        <input type="email" id="usr-email" placeholder="carlos@empresa.com">
+      </div>
+      <div class="field-group">
+        <label>Senha Inicial * (mín. 6 caracteres)</label>
+        <input type="password" id="usr-senha" placeholder="••••••••">
+      </div>
+      <div class="field-group">
+        <label>Setor / Perfil *</label>
+        <select id="usr-setor">
+          <option value="">Selecione...</option>
+          <option value="administracao">Administração</option>
+          <option value="manutencao">Manutenção</option>
+          <option value="usinagem">Usinagem</option>
+          <option value="producao">Produção</option>
+          <option value="utilidades">Utilidades</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="App.fecharModal('modal-usuario')">Cancelar</button>
+        <button class="btn-success" id="btn-salvar-usuario" onclick="App.salvarUsuario()">Criar Usuário</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="motores.js"></script>
+<script src="dashboard.js"></script>
+<script src="app.js"></script>
+<script>
+  const t = document.getElementById('themeToggle');
+  const h = document.documentElement;
+  t.addEventListener('click', () => {
+    h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('tema', h.dataset.theme);
+  });
+  const s = localStorage.getItem('tema');
+  if (s) h.dataset.theme = s;
+</script>
+</body>
+</html>
