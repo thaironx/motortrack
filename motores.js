@@ -238,4 +238,4 @@ const Motores = (() => {
     buscarPorId,
     buscarPorCodigo
   };
-})();
+})(); //ass

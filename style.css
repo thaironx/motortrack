@@ -817,7 +817,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
 }
 .check-label:hover { border-color: var(--accent); background: rgba(240,165,0,0.06); }
 
-/* Feedback visual quando marcado — sem isso parece que só 1 fica selecionado */
 .check-label:has(input:checked) {
   border-color: var(--accent);
   background: rgba(240,165,0,0.15);
@@ -943,9 +942,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
   line-height: 1.5;
 }
 
-/* ================================================
-   HAMBÚRGUER & MENU MOBILE
-   ================================================ */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -983,7 +979,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
 }
 .mobile-nav-overlay.active { display: block; }
 
-/* Cards e pipeline clicáveis */
 .stat-card { cursor: pointer; }
 .stat-card:active { transform: scale(0.98); }
 .pipeline-col:hover { border-color: var(--accent) !important; }
@@ -1062,12 +1057,9 @@ tr:hover td { background: rgba(240,165,0,0.025); }
   .check-grid          { grid-template-columns: 1fr; }
   .modal-xl, .modal-lg { width: 100%; }
 }
-/* ================================================
-   TABELAS — LAYOUT CARD NO MOBILE (todas as tabelas)
-   ================================================ */
+
 @media (max-width: 700px) {
 
-  /* Filtros empilhados */
   .table-filters {
     flex-direction: column;
     align-items: stretch;
@@ -1084,7 +1076,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
     gap: 12px;
   }
 
-  /* Transforma tabela em cards */
   .table-wrapper table,
   .table-wrapper thead,
   .table-wrapper tbody,
@@ -1120,7 +1111,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
   .table-wrapper tbody td:last-child { border-bottom: none; padding-bottom: 0; }
   .table-wrapper tbody td:first-child { padding-top: 0; }
 
-  /* Label automático via data-label */
   .table-wrapper tbody td::before {
     content: attr(data-label);
     font-size: 10px;
@@ -1131,7 +1121,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
     flex-shrink: 0;
   }
 
-  /* Linha de ações: botões lado a lado */
   .table-wrapper tbody td[data-label="Ações"] {
     justify-content: flex-end;
     gap: 8px;
@@ -1140,12 +1129,10 @@ tr:hover td { background: rgba(240,165,0,0.025); }
   }
   .table-wrapper tbody td[data-label="Ações"]::before { display: none; }
 
-  /* Código OS em destaque no topo do card */
   .table-wrapper tbody td:first-child .motor-code {
     font-size: 14px;
   }
 
-  /* Linha vazia */
   .table-wrapper tbody td.empty-row {
     justify-content: center;
     border: none;
@@ -1153,9 +1140,6 @@ tr:hover td { background: rgba(240,165,0,0.025); }
   .table-wrapper tbody td.empty-row::before { display: none; }
 }
 
-/* ================================================
-   TOAST / POP-UP DE NOTIFICAÇÃO
-   ================================================ */
 #toast-container {
   position: fixed; top: 20px; right: 20px; z-index: 9999;
   display: flex; flex-direction: column; gap: 10px; pointer-events: none;

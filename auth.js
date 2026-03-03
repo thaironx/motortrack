@@ -93,4 +93,4 @@ const Auth = (() => {
   function getSetor()  { return currentPerfil ? currentPerfil.setor : null; }
   function isAdmin()   { return currentPerfil && currentPerfil.setor === 'administracao'; }
   return { login, logout, observar, criarUsuario, getUser, getPerfil, getSetor, isAdmin };
-})();
+})(); //ass
