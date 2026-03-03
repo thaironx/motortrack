@@ -8,7 +8,6 @@ const Motores = (() => {
     { id: 'extrusao',     label: 'Extrusão'       },
     { id: 'outro',        label: 'Outro'          }
   ];
-
   const ETAPAS_MANUTENCAO = [
     { id: 'entrada_manutencao', label: 'Entrada na Manutenção', cor: '#60a0ff',
       desc: 'Motor recebido pelo setor de manutenção' },
@@ -25,7 +24,6 @@ const Motores = (() => {
     { id: 'concluido',          label: 'Concluído / Retornado', cor: '#00c97a',
       desc: 'Motor aprovado nos testes e devolvido ao setor de origem' }
   ];
-
   const TIPOS_REPARO = [
     'Troca de rolamento(s)',
     'Troca de vedação / retentor',
@@ -38,21 +36,17 @@ const Motores = (() => {
     'Troca de carcaça / tampa',
     'Reparo elétrico interno',
     'Substituição completa do motor',
-    'Outro'
+    'Múltiplos Reparos ou diversos não listados acima)'
   ];
-
   function gerarCodigo() {
     const agora = new Date();
     const data  = agora.toISOString().slice(0,10).replace(/-/g,'');
     const rand  = Math.floor(1000 + Math.random() * 9000);
     return `MN-${data}-${rand}`;
   }
-
   async function cadastrar(dados) {
     const codigo = gerarCodigo();
     const agora  = firebase.firestore.Timestamp.now();
-
-    // BUG FIX: campo salvo no Firebase como "prazoRetorno" — leitura agora usa o mesmo nome
     const motor = {
       codigo,
       tag:              dados.tag              || '',
@@ -87,7 +81,6 @@ const Motores = (() => {
     const docRef = await db.collection('motores').add(motor);
     return { id: docRef.id, ...motor };
   }
-
   async function avancarEtapa(motorId, novaEtapa, obs) {
     const agora     = firebase.firestore.Timestamp.now();
     const etapaInfo = ETAPAS_MANUTENCAO.find(e => e.id === novaEtapa);
@@ -108,7 +101,6 @@ const Motores = (() => {
     }
     await db.collection('motores').doc(motorId).update(update);
   }
-
   async function registrarDiagnostico(motorId, dados) {
     const agora = firebase.firestore.Timestamp.now();
     await db.collection('motores').doc(motorId).update({
@@ -140,10 +132,8 @@ const Motores = (() => {
       })
     });
   }
-
   async function registrarReparo(motorId, dados) {
     const agora = firebase.firestore.Timestamp.now();
-
     await db.collection('motores').doc(motorId).update({
       reparo: {
         tiposIntervencao: dados.tiposIntervencao || [],
@@ -162,16 +152,13 @@ const Motores = (() => {
       })
     });
   }
-
   async function registrarTesteFinal(motorId, dados) {
     const agora = firebase.firestore.Timestamp.now();
-
     const labels = {
-      'aprovado':            'Aprovado — apto para retorno ao setor',
-      'reprovado_sucateado': 'Reprovado — motor sucateado',
+      'aprovado':            'Aprovado — Apto para retorno ao setor',
+      'reprovado_sucateado': 'Reprovado — Motor sucateado',
       'substituido':         'Motor substituído por unidade nova'
     };
-
     await db.collection('motores').doc(motorId).update({
       testeFinal: {
         resultado:    dados.resultado,
@@ -197,7 +184,6 @@ const Motores = (() => {
       })
     });
   }
-
   function calcularStatusPrazo(prazoStr) {
     if (!prazoStr) return { tipo: 'ok', label: 'Sem prazo definido', dias: null };
     const hoje   = new Date(); hoje.setHours(0,0,0,0);
@@ -207,8 +193,6 @@ const Motores = (() => {
     if (dias <= 2) return { tipo: 'alerta',   label: `${dias}d para o prazo`,        dias };
     return              { tipo: 'ok',        label: `${dias}d para o prazo`,         dias };
   }
-
-  // BUG FIX: retornava {etapa, minutos}, mas dashboard espera {setor, horas}
   function calcularTemposPorEtapa(historico) {
     if (!historico || historico.length === 0) return [];
     const movs = historico.filter(h => h.tipo === 'movimentacao');
@@ -221,27 +205,22 @@ const Motores = (() => {
       return { setor: h.etapa, horas };
     });
   }
-
   function labelPrioridade(p) {
     return { baixa:'Baixa', normal:'Normal', alta:'Alta', urgente:'URGENTE' }[p] || p;
   }
-
   function escutarMotores(callback) {
     return db.collection('motores')
       .orderBy('atualizadoEm', 'desc')
       .onSnapshot(snap => callback(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
   }
-
   async function buscarPorId(id) {
     const doc = await db.collection('motores').doc(id).get();
     return doc.exists ? { id: doc.id, ...doc.data() } : null;
   }
-
   async function buscarPorCodigo(codigo) {
     const snap = await db.collection('motores').where('codigo', '==', codigo).limit(1).get();
     return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
   }
-
   return {
     SETORES_ORIGEM,
     ETAPAS_MANUTENCAO,
