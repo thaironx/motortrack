@@ -29,8 +29,6 @@ const Toast = (() => {
 
 const App = (() => {
   let motorAtualId = null;
-
-  // ── Utilitários ─────────────────────────────────────────────────
   function abrirModal(id)  { document.getElementById(id)?.classList.add('open'); }
   function fecharModal(id) { document.getElementById(id)?.classList.remove('open'); }
   function limparModal(id) {
@@ -41,7 +39,6 @@ const App = (() => {
   }
   function getVal(id) { return document.getElementById(id)?.value || ''; }
 
-  // ── Init ─────────────────────────────────────────────────────────
   function init() {
     Auth.observar((user, perfil) => {
       if (user) {
@@ -65,7 +62,6 @@ const App = (() => {
     });
   }
 
-  // ── Login / Logout ───────────────────────────────────────────────
   async function fazerLogin() {
     const email = document.getElementById('campo-email').value.trim();
     const senha = document.getElementById('campo-senha').value;
@@ -100,7 +96,6 @@ const App = (() => {
   }
   async function fazerLogout() { await Auth.logout(); }
 
-  // ── Navegação ────────────────────────────────────────────────────
   function navegarPara(pagina) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -133,7 +128,6 @@ const App = (() => {
     if (el) el.style.display = setor === 'administracao' ? 'inline-block' : 'none';
   }
 
-  // ── Cadastro de motor ────────────────────────────────────────────
   function abrirCadastro() {
     limparModal('modal-cadastro');
     document.getElementById('cad-dataentrada').value = new Date().toISOString().slice(0, 10);
@@ -178,7 +172,6 @@ const App = (() => {
     }
   }
 
-  // ── Detalhe de motor ─────────────────────────────────────────────
   async function abrirDetalhe(motorId) {
     motorAtualId = motorId;
     const motor = await Motores.buscarPorId(motorId);
@@ -196,7 +189,6 @@ const App = (() => {
     abrirAcao(motorAtualId);
   }
 
-  // ── Ação / etapa ─────────────────────────────────────────────────
   async function abrirAcao(motorId) {
     motorAtualId = motorId;
     const motor = await Motores.buscarPorId(motorId);
@@ -316,7 +308,6 @@ const App = (() => {
     }
   }
 
-  // ── Criar usuário ────────────────────────────────────────────────
   function abrirCriarUsuario() {
     limparModal('modal-usuario');
     abrirModal('modal-usuario');
@@ -346,13 +337,11 @@ const App = (() => {
     }
   }
 
-  // ── QR Code URL (link direto) ────────────────────────────────────
   function verificarQRCodeURL() {
     const codigo = new URLSearchParams(window.location.search).get('motor');
     if (codigo) Motores.buscarPorCodigo(codigo).then(m => { if (m) abrirDetalhe(m.id); });
   }
 
-  // ── Listar / Renderizar usuários ─────────────────────────────────
   async function renderizarUsuarios() {
     try {
       const snap  = await db.collection('usuarios').get();
@@ -373,7 +362,6 @@ const App = (() => {
     }
   }
 
-  // ── Editar usuário ───────────────────────────────────────────────
   function abrirEditarUsuario(uid, dadosEncoded) {
     const u = JSON.parse(decodeURIComponent(dadosEncoded));
     document.getElementById('edit-usr-uid').value   = uid;
@@ -382,7 +370,6 @@ const App = (() => {
     document.getElementById('edit-usr-setor').value = u.setor || '';
     document.getElementById('edit-usr-senha').value = '';
     document.getElementById('edit-usr-erro').style.display = 'none';
-    // Botão deletar só para ADM
     const btnDel = document.getElementById('btn-deletar-usuario');
     if (btnDel) btnDel.style.display = Auth.isAdmin() ? 'inline-flex' : 'none';
     abrirModal('modal-editar-usuario');
@@ -411,7 +398,6 @@ const App = (() => {
     }
   }
 
-  // ── Excluir usuário ──────────────────────────────────────────────
   function pedirExcluirUsuario() {
     if (!Auth.isAdmin()) { Toast.erro('Apenas administradores podem excluir usuários.'); return; }
     const uid  = getVal('edit-usr-uid');
@@ -438,7 +424,6 @@ const App = (() => {
     }
   }
 
-  // ── Scanner QR ───────────────────────────────────────────────────
   let _qrStream    = null;
   let _qrAnimFrame = null;
   let _qrMotorId   = null;
@@ -500,8 +485,12 @@ const App = (() => {
 
   async function _processarQRCode(texto) {
     _pararCameraQR();
+    const videoEl  = document.getElementById('qr-video');
+    const frameEl  = document.getElementById('qr-frame');
     const statusEl = document.getElementById('qr-status');
-    if (statusEl) statusEl.textContent = '✔ QR lido! Buscando motor...';
+    if (videoEl)  videoEl.style.display = 'none';
+    if (frameEl)  frameEl.style.display = 'none';
+    if (statusEl) statusEl.textContent  = '✔ QR lido! Buscando motor...';
     let codigo = texto;
     try { const url = new URL(texto); codigo = url.searchParams.get('motor') || texto; } catch (e) {}
     let motor = null;
@@ -566,15 +555,21 @@ const App = (() => {
         ultimaHTML + reparoHTML +
       '</div>';
 
+    const area   = document.getElementById('qr-scanner-area');
     const video  = document.getElementById('qr-video');
     const frame  = document.getElementById('qr-frame');
     const result = document.getElementById('qr-resultado');
+    if (area)   area.style.display   = 'none';
     if (video)  video.style.display  = 'none';
     if (frame)  frame.style.display  = 'none';
     if (result) result.style.display = 'block';
 
     const btnVer = document.getElementById('btn-qr-ver-detalhe');
-    if (btnVer) btnVer.onclick = () => { fecharScannerQR(); abrirDetalhe(_qrMotorId); };
+    if (btnVer) btnVer.onclick = () => {
+      const idParaAbrir = _qrMotorId;
+      fecharScannerQR();
+      if (idParaAbrir) abrirDetalhe(idParaAbrir);
+    };
   }
 
   function reiniciarScannerQR() {
@@ -582,10 +577,12 @@ const App = (() => {
     const video  = document.getElementById('qr-video');
     const frame  = document.getElementById('qr-frame');
     const result = document.getElementById('qr-resultado');
+    const area   = document.getElementById('qr-scanner-area');
     const status = document.getElementById('qr-status');
+    if (result) result.style.display = 'none';
+    if (area)   area.style.display   = 'block';
     if (video)  video.style.display  = 'block';
     if (frame)  frame.style.display  = 'flex';
-    if (result) result.style.display = 'none';
     if (status) status.textContent   = 'Aponte para o QR code do motor...';
     _iniciarCameraQR();
   }
@@ -602,12 +599,157 @@ const App = (() => {
     const video  = document.getElementById('qr-video');
     const frame  = document.getElementById('qr-frame');
     const result = document.getElementById('qr-resultado');
+    const area   = document.getElementById('qr-scanner-area');
+    if (result) result.style.display = 'none';
+    if (area)   area.style.display   = 'block';
     if (video)  video.style.display  = 'block';
     if (frame)  frame.style.display  = 'flex';
-    if (result) result.style.display = 'none';
   }
 
-  // ── Return público ───────────────────────────────────────────────
+  function imprimirQRCode(motorId, motorCodigo) {
+    const container = document.getElementById('qrcode-container-' + motorId);
+    let qrImg = null;
+    if (container) {
+      const canvas = container.querySelector('canvas');
+      const img    = container.querySelector('img');
+      if (canvas) {
+        const i = new Image(); i.src = canvas.toDataURL('image/png'); qrImg = i;
+      } else if (img) {
+        qrImg = img;
+      }
+    }
+
+    function _gerarEAbrir(qrImageEl) {
+      const W = 1536, H = 2048;
+      const S = W / 520;
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+      const pad = Math.round(W * 0.035);
+      ctx.strokeStyle = '#cccccc';
+      ctx.lineWidth = Math.round(W * 0.005);
+      _roundRect(ctx, pad, pad, W - pad*2, H - pad*2, Math.round(W * 0.035));
+      ctx.stroke();
+      ctx.fillStyle = '#888888';
+      ctx.font = `700 ${Math.round(W * 0.033)}px Arial`;
+      ctx.letterSpacing = Math.round(W * 0.006) + 'px';
+      ctx.textAlign = 'center';
+      ctx.fillText('MOTORTRACK — QR CODE', W / 2, Math.round(H * 0.1));
+      ctx.fillStyle = '#111111';
+      ctx.font = `900 ${Math.round(W * 0.058)}px monospace`;
+      ctx.letterSpacing = Math.round(W * 0.003) + 'px';
+      ctx.fillText(motorCodigo, W / 2, Math.round(H * 0.16));
+      const qrSize = Math.round(W * 0.75);
+      const qrX = (W - qrSize) / 2;
+      const qrY = Math.round(H * 0.21);
+      if (qrImageEl) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(qrImageEl, qrX, qrY, qrSize, qrSize);
+        ctx.imageSmoothingEnabled = true;
+      } else {
+        ctx.fillStyle = '#eeeeee';
+        ctx.fillRect(qrX, qrY, qrSize, qrSize);
+        ctx.fillStyle = '#aaaaaa';
+        ctx.font = `${Math.round(W * 0.03)}px Arial`;
+        ctx.fillText('QR não disponível', W/2, qrY + qrSize/2);
+      }
+
+      const sepY = Math.round(H * 0.86);
+      ctx.strokeStyle = '#eeeeee';
+      ctx.lineWidth = Math.round(W * 0.002);
+      ctx.beginPath();
+      ctx.moveTo(pad + Math.round(W*0.04), sepY);
+      ctx.lineTo(W - pad - Math.round(W*0.04), sepY);
+      ctx.stroke();
+
+      const logoImg = new Image();
+      logoImg.onload = () => {
+        const maxW = Math.round(W * 0.5), maxH = Math.round(H * 0.08);
+        let lw = logoImg.width, lh = logoImg.height;
+        const sc = Math.min(maxW / lw, maxH / lh);
+        lw = lw * sc; lh = lh * sc;
+        const logoY = sepY + Math.round((H - sepY - lh) / 2);
+        ctx.drawImage(logoImg, (W - lw) / 2, logoY, lw, lh);
+        _exportar();
+      };
+      logoImg.onerror = () => {
+        ctx.fillStyle = '#f0a500';
+        ctx.font = `700 ${Math.round(W * 0.045)}px Arial`;
+        ctx.letterSpacing = Math.round(W*0.003) + 'px';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚙ MotorTrack', W / 2, sepY + Math.round((H - sepY) * 0.5));
+        ctx.fillStyle = '#aaaaaa';
+        ctx.font = `${Math.round(W * 0.028)}px Arial`;
+        ctx.fillText('Manutenção Industrial', W / 2, sepY + Math.round((H - sepY) * 0.75));
+        _exportar();
+      };
+      logoImg.src = 'logo.png';
+
+      function _exportar() {
+        const cardDataUrl = cv.toDataURL('image/png');
+        const win = window.open('', '_blank');
+        win.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code — ${motorCodigo}</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:Arial,sans-serif; background:#f5f5f5; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:20px; padding:24px; }
+    img.card-img { max-width:420px; width:100%; border-radius:14px; box-shadow:0 4px 24px rgba(0,0,0,0.12); }
+    .btns { display:flex; gap:12px; }
+    .btn { padding:11px 26px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; border:none; }
+    .btn-print { background:#111; color:#fff; }
+    .btn-dl    { background:#f0a500; color:#fff; }
+    .btn:hover { opacity:0.85; }
+    @media print { .btns { display:none; } body { background:#fff; padding:0; } }
+  </style>
+</head>
+<body>
+  <img class="card-img" id="card" src="${cardDataUrl}" alt="QR Code ${motorCodigo}">
+  <div class="btns">
+    <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn btn-dl"    onclick="dl()">⬇ Baixar PNG</button>
+  </div>
+  <script>
+    function dl() {
+      const a = document.createElement('a');
+      a.href = document.getElementById('card').src;
+      a.download = 'QR-${motorCodigo}.png';
+      a.click();
+    }
+  <\/script>
+</body>
+</html>`);
+        win.document.close();
+      }
+    }
+
+    if (qrImg && !qrImg.complete) {
+      qrImg.onload = () => _gerarEAbrir(qrImg);
+    } else {
+      _gerarEAbrir(qrImg);
+    }
+  }
+
+  function _roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
   return {
     init, fazerLogout, navegarPara, filtrarEIr,
     abrirCadastro, salvarCadastro,
@@ -616,9 +758,8 @@ const App = (() => {
     abrirEditarUsuario, salvarEdicaoUsuario,
     pedirExcluirUsuario, confirmarExcluirUsuario,
     abrirScannerQR, fecharScannerQR, reiniciarScannerQR,
+    imprimirQRCode,
     fecharModal
   };
 })();
-
 document.addEventListener('DOMContentLoaded', () => App.init());
-//ass
