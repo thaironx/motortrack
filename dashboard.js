@@ -185,7 +185,13 @@ const Dashboard = (() => {
         <div class="block-title">Histórico de Movimentações</div>
         <div class="timeline" style="margin-top:16px;">${historico || '<span style="color:var(--text2);">Sem histórico</span>'}</div>
       </div>
-      <div id="qrcode-container-${motor.id}" style="margin-top:20px;text-align:center;padding:20px;background:white;display:inline-block;"></div>
+      <div id="qrcode-container-${motor.id}" style="margin-top:20px;text-align:center;padding:20px;background:white;display:inline-block;border-radius:8px;"></div>
+      <div style="margin-top:10px;text-align:center;">
+        <button class="btn-imprimir-qr action-btn" onclick="App.imprimirQRCode('${motor.id}','${motor.codigo}')"
+          style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:8px 18px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:border-color .2s,background .2s;">
+          🖨️ Imprimir / Baixar QR Code
+        </button>
+      </div>
     `;
     setTimeout(() => {
       const qrEl = document.getElementById(`qrcode-container-${motor.id}`);
@@ -213,4 +219,4 @@ const Dashboard = (() => {
     return d.toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
   }
   return { iniciar, parar, renderizarTudo, renderizarTabelaMotores, renderizarDetalhe };
-})(); //ass
+})();

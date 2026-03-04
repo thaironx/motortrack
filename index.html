@@ -50,7 +50,6 @@
   </nav>
   <div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="closeMobileMenu()"></div>
 
-  <!-- Botão flutuante scanner QR -->
   <button class="fab-qr" id="fab-qr" onclick="App.abrirScannerQR()" title="Escanear QR Code do Motor">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -499,7 +498,6 @@
     </div>
   </div>
 </div>
-<!-- Modal Scanner QR -->
 <div class="modal-overlay" id="modal-scanner-qr">
   <div class="modal" style="width:480px;">
     <div class="modal-header">
@@ -510,10 +508,9 @@
       <button class="modal-close" onclick="App.fecharScannerQR()">✕</button>
     </div>
     <div class="modal-body" style="padding:0;">
-      <div id="qr-scanner-area" style="position:relative;background:#000;border-radius:0 0 4px 4px;overflow:hidden;min-height:320px;display:flex;align-items:center;justify-content:center;">
-        <video id="qr-video" style="width:100%;max-height:400px;display:block;" playsinline autoplay muted></video>
+      <div id="qr-scanner-area" style="position:relative;background:#000;overflow:hidden;width:100%;aspect-ratio:16/9;">
+        <video id="qr-video" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" playsinline autoplay muted></video>
         <canvas id="qr-canvas" style="display:none;"></canvas>
-        <!-- Moldura de mira -->
         <div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;">
           <div id="qr-frame" style="width:200px;height:200px;position:relative;">
             <span style="position:absolute;top:0;left:0;width:32px;height:32px;border-top:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:4px 0 0 0;"></span>
@@ -523,25 +520,28 @@
             <div id="qr-scan-line" style="position:absolute;left:4px;right:4px;height:2px;background:var(--accent);opacity:0.85;box-shadow:0 0 8px var(--accent);animation:qrScanLine 2s linear infinite;top:50%;"></div>
           </div>
         </div>
-        <!-- Status -->
         <div id="qr-status" style="position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:11px;color:#fff;text-shadow:0 1px 4px #000;pointer-events:none;">
           Iniciando câmera...
         </div>
       </div>
-      <!-- Resultado -->
-      <div id="qr-resultado" style="display:none;padding:20px;">
-        <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:10px;letter-spacing:1px;">✔ QR CODE LIDO</div>
-        <div id="qr-resultado-body"></div>
-        <div class="form-actions" style="margin-top:16px;">
+      <div id="qr-resultado" style="display:none;">
+        <img id="qr-loading-img"
+          src="qr-loading.png"
+          alt=""
+          style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">
+        <div style="padding:16px 20px 4px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:10px;letter-spacing:1px;">✔ QR CODE LIDO</div>
+          <div id="qr-resultado-body"></div>
+        </div>
+        <div class="form-actions" style="padding:0 20px 20px;margin-top:8px;">
           <button class="btn-secondary" onclick="App.reiniciarScannerQR()">↺ Ler outro</button>
-          <button class="btn-success" id="btn-qr-ver-detalhe" onclick="App.fecharScannerQR()">Ver Detalhe Completo →</button>
+          <button class="btn-success" id="btn-qr-ver-detalhe">Ver Detalhe Completo →</button>
         </div>
       </div>
+
     </div>
   </div>
 </div>
-
-<!-- Modal confirmar exclusão de usuário -->
 <div class="modal-overlay" id="modal-confirmar-exclusao">
   <div class="modal" style="width:420px;">
     <div class="modal-header">
@@ -659,4 +659,3 @@
 </script>
 </body>
 </html>
-<!--ass-->
