@@ -406,7 +406,169 @@ const App = (() => {
       btn.textContent = 'Salvar Alterações'; btn.disabled = false;
     }
   }
-  function abrirModal(id)  { document.getElementById(id)?.classList.add('open'); }
+  // ── Scanner QR ──────────────────────────────────────────────────
+  let _qrStream = null;
+  let _qrAnimFrame = null;
+  let _qrMotorId = null;
+
+  function abrirScannerQR() {
+    document.getElementById('qr-resultado').style.display = 'none';
+    document.getElementById('qr-scanner-area').querySelector('video').style.display = 'block';
+    document.getElementById('qr-frame').style.display = 'block';
+    document.getElementById('qr-status').textContent = 'Iniciando câmera...';
+    abrirModal('modal-scanner-qr');
+    iniciarCameraQR();
+  }
+  async function iniciarCameraQR() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      _qrStream = stream;
+      const video = document.getElementById('qr-video');
+      video.srcObject = stream;
+      video.play();
+      document.getElementById('qr-status').textContent = 'Aponte para o QR code do motor...';
+      video.addEventListener('loadedmetadata', () => _tickQR());
+    } catch (e) {
+      document.getElementById('qr-status').textContent = '⚠ Sem acesso à câmera: ' + e.message;
+    }
+  }
+  function _tickQR() {
+    const video  = document.getElementById('qr-video');
+    const canvas = document.getElementById('qr-canvas');
+    if (!video || video.readyState < 2) { _qrAnimFrame = requestAnimationFrame(_tickQR); return; }
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let code = null;
+    try { code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' }); } catch(e) {}
+    if (code && code.data) {
+      _processarQRCode(code.data);
+      return;
+    }
+    _qrAnimFrame = requestAnimationFrame(_tickQR);
+  }
+  async function _processarQRCode(texto) {
+    pararCameraQR();
+    document.getElementById('qr-status').textContent = '✔ QR lido! Buscando motor...';
+    // Extrai código do motor da URL ou usa direto
+    let codigo = texto;
+    try {
+      const url = new URL(texto);
+      codigo = url.searchParams.get('motor') || texto;
+    } catch (e) {}
+    const motor = await Motores.buscarPorCodigo(codigo).catch(() => null)
+                || await Motores.buscarPorId(codigo).catch(() => null);
+    if (!motor) {
+      document.getElementById('qr-status').textContent = '⚠ Motor não encontrado: ' + codigo;
+      setTimeout(() => {
+        document.getElementById('qr-video').style.display = 'block';
+        document.getElementById('qr-frame').style.display = 'block';
+        document.getElementById('qr-status').textContent = 'Aponte para o QR code do motor...';
+        iniciarCameraQR();
+      }, 2500);
+      return;
+    }
+    _qrMotorId = motor.id;
+    _renderizarResultadoQR(motor);
+  }
+  function _renderizarResultadoQR(m) {
+    const prazo    = Motores.calcularStatusPrazo(m.prazoRetorno);
+    const etapa    = Motores.ETAPAS_MANUTENCAO.find(s => s.id === m.etapaAtual);
+    const statusCl = prazo.tipo === 'ok' ? 'status-ok' : prazo.tipo === 'alerta' ? 'status-alerta' : 'status-atrasado';
+    const motorTag = m.tag ? `${m.tag} — ${m.modelo}` : m.modelo;
+    const ultimaObs = m.historico && m.historico.length
+      ? [...m.historico].reverse()[0]
+      : null;
+    const ultimaData = ultimaObs?.dataHora?.toDate
+      ? ultimaObs.dataHora.toDate().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+      : '—';
+    document.getElementById('qr-resultado-body').innerHTML = `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:0;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <div>
+            <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600;">${m.codigo}</div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);margin-top:2px;">${motorTag}</div>
+          </div>
+          <span class="setor-badge setor-${m.etapaAtual}" style="font-size:11px;">${etapa?.label || m.etapaAtual}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:12px;">
+          <div><span style="color:var(--text2);">Potência</span><br><strong>${m.potencia || '—'}</strong></div>
+          <div><span style="color:var(--text2);">Prioridade</span><br><strong>${Motores.labelPrioridade(m.prioridade)}</strong></div>
+          <div><span style="color:var(--text2);">Prazo de retorno</span><br><strong>${m.prazoRetorno || '—'}</strong></div>
+          <div><span style="color:var(--text2);">Status prazo</span><br><span class="status-dot ${statusCl}" style="font-size:11px;">${prazo.label}</span></div>
+        </div>
+        ${ultimaObs ? `
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:10px;color:var(--text2);font-family:var(--mono);letter-spacing:1px;margin-bottom:4px;">ÚLTIMA MOVIMENTAÇÃO</div>
+          <div style="font-size:12px;color:var(--text);">${ultimaData} — <strong>${ultimaObs.responsavel || '—'}</strong></div>
+          ${ultimaObs.obs ? `<div style="font-size:11px;color:var(--text2);margin-top:3px;">${ultimaObs.obs}</div>` : ''}
+        </div>` : ''}
+        ${m.reparo ? `
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:10px;color:var(--text2);font-family:var(--mono);letter-spacing:1px;margin-bottom:4px;">ÚLTIMO REPARO</div>
+          <div style="font-size:12px;color:var(--text);">${(m.reparo.tiposIntervencao || []).join(', ') || '—'}</div>
+          ${m.reparo.descricaoServico ? `<div style="font-size:11px;color:var(--text2);margin-top:2px;">${m.reparo.descricaoServico}</div>` : ''}
+        </div>` : ''}
+      </div>
+    `;
+    document.getElementById('qr-video').style.display = 'none';
+    document.getElementById('qr-frame').style.display = 'none';
+    document.getElementById('qr-resultado').style.display = 'block';
+    document.getElementById('btn-qr-ver-detalhe').onclick = () => {
+      fecharScannerQR();
+      abrirDetalhe(_qrMotorId);
+    };
+  }
+  function reiniciarScannerQR() {
+    document.getElementById('qr-resultado').style.display = 'none';
+    document.getElementById('qr-video').style.display = 'block';
+    document.getElementById('qr-frame').style.display = 'block';
+    document.getElementById('qr-status').textContent = 'Aponte para o QR code do motor...';
+    _qrMotorId = null;
+    iniciarCameraQR();
+  }
+  function pararCameraQR() {
+    if (_qrAnimFrame) { cancelAnimationFrame(_qrAnimFrame); _qrAnimFrame = null; }
+    if (_qrStream) { _qrStream.getTracks().forEach(t => t.stop()); _qrStream = null; }
+  }
+  function fecharScannerQR() {
+    pararCameraQR();
+    fecharModal('modal-scanner-qr');
+    _qrMotorId = null;
+    document.getElementById('qr-resultado').style.display = 'none';
+    document.getElementById('qr-video').style.display = 'block';
+    document.getElementById('qr-frame').style.display = 'block';
+  }
+  // ── Exclusão de usuário ─────────────────────────────────────────
+  function pedirExcluirUsuario() {
+    if (!Auth.isAdmin()) { Toast.erro('Apenas administradores podem excluir usuários.'); return; }
+    const uid  = getVal('edit-usr-uid');
+    const nome = document.getElementById('edit-usr-nome').value || 'este usuário';
+    document.getElementById('excluir-usr-uid').value = uid;
+    document.getElementById('excluir-usr-nome-label').textContent = nome;
+    fecharModal('modal-editar-usuario');
+    abrirModal('modal-confirmar-exclusao');
+  }
+  async function confirmarExcluirUsuario() {
+    const uid = getVal('excluir-usr-uid');
+    if (!uid) return;
+    const btn = document.getElementById('btn-confirmar-exclusao');
+    btn.textContent = 'Excluindo...'; btn.disabled = true;
+    try {
+      await db.collection('usuarios').doc(uid).delete();
+      fecharModal('modal-confirmar-exclusao');
+      Toast.sucesso('Usuário removido do sistema.', 'Excluído');
+      renderizarUsuarios();
+    } catch (e) {
+      Toast.erro('Erro ao excluir: ' + e.message);
+    } finally {
+      btn.textContent = 'Excluir Usuário'; btn.disabled = false;
+    }
+  }
   function fecharModal(id) { document.getElementById(id)?.classList.remove('open'); }
   function limparModal(id) {
     document.querySelectorAll('#' + id + ' input, #' + id + ' select, #' + id + ' textarea')
@@ -421,6 +583,8 @@ const App = (() => {
     abrirDetalhe, abrirAcaoDeDetalhe, abrirAcao, salvarAcao,
     abrirCriarUsuario, salvarUsuario,
     abrirEditarUsuario, salvarEdicaoUsuario,
+    pedirExcluirUsuario, confirmarExcluirUsuario,
+    abrirScannerQR, fecharScannerQR, reiniciarScannerQR,
     fecharModal
   };
 })();

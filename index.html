@@ -49,6 +49,17 @@
     </div>
   </nav>
   <div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="closeMobileMenu()"></div>
+
+  <!-- Botão flutuante scanner QR -->
+  <button class="fab-qr" id="fab-qr" onclick="App.abrirScannerQR()" title="Escanear QR Code do Motor">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="3" height="3" rx="0.5"/><rect x="18" y="14" width="3" height="3" rx="0.5"/>
+      <rect x="14" y="18" width="3" height="3" rx="0.5"/><rect x="18" y="18" width="3" height="3" rx="0.5"/>
+    </svg>
+    <span>Ler QR</span>
+  </button>
   <main class="page active" id="page-dashboard">
     <div class="page-title">Início</div>
     <div class="page-sub">Manutenção industrial — Visão Geral</div>
@@ -488,6 +499,69 @@
     </div>
   </div>
 </div>
+<!-- Modal Scanner QR -->
+<div class="modal-overlay" id="modal-scanner-qr">
+  <div class="modal" style="width:480px;">
+    <div class="modal-header">
+      <div>
+        <span class="modal-title">📷 Escanear QR Code</span>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-top:2px;">Aponte a câmera para o QR code do motor</div>
+      </div>
+      <button class="modal-close" onclick="App.fecharScannerQR()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <div id="qr-scanner-area" style="position:relative;background:#000;border-radius:0 0 4px 4px;overflow:hidden;min-height:320px;display:flex;align-items:center;justify-content:center;">
+        <video id="qr-video" style="width:100%;max-height:400px;display:block;" playsinline autoplay muted></video>
+        <canvas id="qr-canvas" style="display:none;"></canvas>
+        <!-- Moldura de mira -->
+        <div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;">
+          <div id="qr-frame" style="width:200px;height:200px;position:relative;">
+            <span style="position:absolute;top:0;left:0;width:32px;height:32px;border-top:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:4px 0 0 0;"></span>
+            <span style="position:absolute;top:0;right:0;width:32px;height:32px;border-top:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 4px 0 0;"></span>
+            <span style="position:absolute;bottom:0;left:0;width:32px;height:32px;border-bottom:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:0 0 0 4px;"></span>
+            <span style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-bottom:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 0 4px 0;"></span>
+            <div id="qr-scan-line" style="position:absolute;left:4px;right:4px;height:2px;background:var(--accent);opacity:0.85;box-shadow:0 0 8px var(--accent);animation:qrScanLine 2s linear infinite;top:50%;"></div>
+          </div>
+        </div>
+        <!-- Status -->
+        <div id="qr-status" style="position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:11px;color:#fff;text-shadow:0 1px 4px #000;pointer-events:none;">
+          Iniciando câmera...
+        </div>
+      </div>
+      <!-- Resultado -->
+      <div id="qr-resultado" style="display:none;padding:20px;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:10px;letter-spacing:1px;">✔ QR CODE LIDO</div>
+        <div id="qr-resultado-body"></div>
+        <div class="form-actions" style="margin-top:16px;">
+          <button class="btn-secondary" onclick="App.reiniciarScannerQR()">↺ Ler outro</button>
+          <button class="btn-success" id="btn-qr-ver-detalhe" onclick="App.fecharScannerQR()">Ver Detalhe Completo →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmar exclusão de usuário -->
+<div class="modal-overlay" id="modal-confirmar-exclusao">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--red);">⚠ Excluir Usuário</span>
+      <button class="modal-close" onclick="App.fecharModal('modal-confirmar-exclusao')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text);margin-bottom:6px;line-height:1.7;">
+        Tem certeza que deseja excluir o usuário <strong id="excluir-usr-nome-label" style="color:var(--accent);">—</strong>?
+      </p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:18px;">Esta ação remove o perfil do Firestore. O login do usuário no Firebase Auth permanece, mas ele não terá mais acesso ao sistema.</p>
+      <input type="hidden" id="excluir-usr-uid">
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="App.fecharModal('modal-confirmar-exclusao')">Cancelar</button>
+        <button class="btn-danger" id="btn-confirmar-exclusao" onclick="App.confirmarExcluirUsuario()">Excluir Usuário</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-editar-usuario">
   <div class="modal" style="width:460px;">
     <div class="modal-header">
@@ -520,9 +594,12 @@
         <input type="password" id="edit-usr-senha" placeholder="••••••••  (mín. 6 caracteres)">
       </div>
       <div id="edit-usr-erro" style="display:none;font-size:12px;color:var(--red);margin-top:6px;padding:7px 10px;background:rgba(255,76,76,0.07);border-left:3px solid var(--red);border-radius:0 4px 4px 0;"></div>
-      <div class="form-actions">
-        <button class="btn-secondary" onclick="App.fecharModal('modal-editar-usuario')">Cancelar</button>
-        <button class="btn-success" id="btn-salvar-editar-usuario" onclick="App.salvarEdicaoUsuario()">Salvar Alterações</button>
+      <div class="form-actions" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <button class="btn-danger" id="btn-deletar-usuario" onclick="App.pedirExcluirUsuario()" style="margin-right:auto;">🗑 Excluir Usuário</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-secondary" onclick="App.fecharModal('modal-editar-usuario')">Cancelar</button>
+          <button class="btn-success" id="btn-salvar-editar-usuario" onclick="App.salvarEdicaoUsuario()">Salvar Alterações</button>
+        </div>
       </div>
     </div>
   </div>
@@ -553,11 +630,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
 <script src="motores.js"></script>
 <script src="dashboard.js"></script>
 <script src="app.js"></script>
+<script src="qrscanner.js"></script>
 <script>
   const t = document.getElementById('themeToggle');
   const h = document.documentElement;
