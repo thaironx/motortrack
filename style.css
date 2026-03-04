@@ -823,11 +823,39 @@ tr:hover td { background: rgba(240,165,0,0.025); }
   color: var(--accent);
   font-weight: 600;
 }
+.check-label:has(input:checked) .check-box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.check-label:has(input:checked) .check-box::after {
+  opacity: 1;
+  transform: scale(1);
+}
 .check-label input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
-  accent-color: var(--accent);
+  display: none;
+}
+.check-box {
+  width: 17px;
+  height: 17px;
+  border: 2px solid var(--border2);
+  border-radius: 4px;
+  background: var(--surface2);
   flex-shrink: 0;
+  position: relative;
+  transition: background 0.18s, border-color 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.check-box::after {
+  content: '✕';
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.15s, transform 0.15s;
+  line-height: 1;
 }
 
 .detail-header {

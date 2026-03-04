@@ -92,5 +92,5 @@ const Auth = (() => {
   function getPerfil() { return currentPerfil; }
   function getSetor()  { return currentPerfil ? currentPerfil.setor : null; }
   function isAdmin()   { return currentPerfil && currentPerfil.setor === 'administracao'; }
-  return { login, logout, observar, criarUsuario, getUser, getPerfil, getSetor, isAdmin };
+  return { login, logout, observar, criarUsuario, solicitarSenhaAdmin, getUser, getPerfil, getSetor, isAdmin };
 })(); //ass

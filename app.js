@@ -203,7 +203,10 @@ const App = (() => {
           const input = document.createElement('input');
           input.type = 'checkbox';
           input.value = t;
+          const box = document.createElement('span');
+          box.className = 'check-box';
           label.appendChild(input);
+          label.appendChild(box);
           label.appendChild(document.createTextNode(' ' + t));
           container.appendChild(label);
         });
@@ -333,13 +336,74 @@ const App = (() => {
       tbody.innerHTML = snap.docs.map(d => {
         const u = d.data();
         return '<tr>' +
-          '<td data-label="Nome">' + u.nome + '</td>' +
-          '<td data-label="E-mail" style="font-family:var(--mono);font-size:12px;">' + u.email + '</td>' +
-          '<td data-label="Setor"><span class="etapa-badge" style="border-color:var(--border);color:var(--text2);">' + u.setor + '</span></td>' +
+          '<td data-label="Nome">' + (u.nome || '—') + '</td>' +
+          '<td data-label="E-mail" style="font-family:var(--mono);font-size:12px;">' + (u.email || '—') + '</td>' +
+          '<td data-label="Setor"><span class="etapa-badge" style="border-color:var(--border);color:var(--text2);">' + (u.setor || '—') + '</span></td>' +
+          '<td data-label="Ações"><button class="action-btn" onclick="App.abrirEditarUsuario(\'' + d.id + '\',\'' + encodeURIComponent(JSON.stringify(u)) + '\')">Editar</button></td>' +
           '</tr>';
       }).join('');
     } catch (e) {
       console.warn('Sem permissão para listar usuários:', e.message);
+    }
+  }
+  function abrirEditarUsuario(uid, dadosEncoded) {
+    const u = JSON.parse(decodeURIComponent(dadosEncoded));
+    document.getElementById('edit-usr-uid').value   = uid;
+    document.getElementById('edit-usr-nome').value  = u.nome  || '';
+    document.getElementById('edit-usr-email').value = u.email || '';
+    document.getElementById('edit-usr-setor').value = u.setor || '';
+    document.getElementById('edit-usr-senha').value = '';
+    document.getElementById('edit-usr-erro').style.display = 'none';
+    abrirModal('modal-editar-usuario');
+  }
+  async function salvarEdicaoUsuario() {
+    const uid   = getVal('edit-usr-uid');
+    const nome  = getVal('edit-usr-nome').trim();
+    const email = getVal('edit-usr-email').trim();
+    const senha = getVal('edit-usr-senha');
+    const setor = getVal('edit-usr-setor');
+    const errEl = document.getElementById('edit-usr-erro');
+    errEl.style.display = 'none';
+    if (!nome)  { Toast.aviso('Informe o Nome.', 'Campo obrigatório'); return; }
+    if (!email) { Toast.aviso('Informe o E-mail.', 'Campo obrigatório'); return; }
+    if (!setor) { Toast.aviso('Selecione o Setor.', 'Campo obrigatório'); return; }
+    if (senha && senha.length < 6) { Toast.aviso('A senha deve ter ao menos 6 caracteres.', 'Senha fraca'); return; }
+    const btn = document.getElementById('btn-salvar-editar-usuario');
+    btn.textContent = 'Salvando...'; btn.disabled = true;
+    try {
+      await db.collection('usuarios').doc(uid).update({ nome, email, setor });
+      if (senha) {
+        try {
+          const adminSenha = await Auth.solicitarSenhaAdmin();
+          const adminEmail = Auth.getUser().email;
+          const userSnap = await db.collection('usuarios').doc(uid).get();
+          const userEmail = userSnap.data().email;
+          const userCred = await firebase.auth().signInWithEmailAndPassword(userEmail, adminSenha)
+            .catch(async () => {
+              await firebase.auth().signInWithEmailAndPassword(adminEmail, adminSenha);
+              throw new Error('Use a senha do usuário para alterar a senha dele, não a sua.');
+            });
+          if (firebase.auth().currentUser?.uid === uid) {
+            await firebase.auth().currentUser.updatePassword(senha);
+          }
+          await firebase.auth().signOut();
+          await firebase.auth().signInWithEmailAndPassword(adminEmail, adminSenha);
+        } catch (e2) {
+          if (e2.message !== 'Operação cancelada pelo administrador.') {
+            Toast.aviso('Dados salvos, mas não foi possível alterar a senha: ' + e2.message, 'Atenção');
+          }
+          fecharModal('modal-editar-usuario');
+          renderizarUsuarios();
+          return;
+        }
+      }
+      fecharModal('modal-editar-usuario');
+      Toast.sucesso('Usuário <strong>' + nome + '</strong> atualizado!', 'Dados salvos');
+      renderizarUsuarios();
+    } catch (e) {
+      Toast.erro('Erro ao salvar: ' + e.message);
+    } finally {
+      btn.textContent = 'Salvar Alterações'; btn.disabled = false;
     }
   }
   function abrirModal(id)  { document.getElementById(id)?.classList.add('open'); }
@@ -355,7 +419,9 @@ const App = (() => {
     init, fazerLogout, navegarPara, filtrarEIr,
     abrirCadastro, salvarCadastro,
     abrirDetalhe, abrirAcaoDeDetalhe, abrirAcao, salvarAcao,
-    abrirCriarUsuario, salvarUsuario, fecharModal
+    abrirCriarUsuario, salvarUsuario,
+    abrirEditarUsuario, salvarEdicaoUsuario,
+    fecharModal
   };
 })();
 document.addEventListener('DOMContentLoaded', () => App.init());
