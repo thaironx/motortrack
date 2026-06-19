@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MotorTrack — Manutenção Industrial</title>
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="pub-nav">
+  <a class="pub-nav-logo" href="homepage.html">⚙ MotorTrack</a>
+
+  <div class="pub-nav-links" id="pub-nav-links">
+    <a class="pub-nav-link active" href="homepage.html">Início</a>
+    <a class="pub-nav-link" href="services.html">Serviços</a>
+    <a class="pub-nav-link" href="aboutus.html">Sobre</a>
+    <a class="pub-nav-link" href="contacts.html">Contato</a>
+    <a class="pub-nav-link" href="myequipment.html">Meu Equipamento</a>
+  </div>
+
+  <div class="pub-nav-right">
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema"></button>
+    <a class="pub-btn-login" href="../../limited/index.html">Acessar Sistema</a>
+    <button class="pub-hamburger" id="pub-hamburger" onclick="togglePubMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── Mobile nav dropdown ── -->
+<div id="pub-mobile-nav"
+     style="display:none;position:fixed;top:64px;left:0;right:0;z-index:190;
+            background:var(--surface);border-bottom:2px solid var(--accent);
+            padding:8px 0;box-shadow:0 8px 24px rgba(0,0,0,.25);">
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="homepage.html">Início</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="services.html">Serviços</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="portfolio.html">Portfólio</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="aboutus.html">Sobre</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="contacts.html">Contato</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="myequipment.html">Meu Equipamento</a>
+  <a class="pub-btn-login" style="display:block;margin:10px 24px 14px;text-align:center;"
+     href="../../limited/index.html">Acessar Sistema</a>
+</div>
+
+<!-- ── FAB QR (flutuante) ── -->
+<button class="pub-fab-qr" id="pub-fab-qr" onclick="QRPublic.abrir()" title="Ler QR Code do motor">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="3" height="3" rx=".5"/>
+    <rect x="18" y="14" width="3" height="3" rx=".5"/>
+    <rect x="14" y="18" width="3" height="3" rx=".5"/>
+    <rect x="18" y="18" width="3" height="3" rx=".5"/>
+  </svg>
+  <span>Ler QR</span>
+</button>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <!-- Engrenagens decorativas -->
+  <div class="hero-gear-bg">
+    <svg style="width:520px;height:520px;top:-60px;right:-80px;" viewBox="0 0 100 100">
+      <text y="90" font-size="90" fill="var(--accent)">⚙</text>
+    </svg>
+    <svg style="width:280px;height:280px;bottom:30px;left:20px;" viewBox="0 0 100 100">
+      <text y="90" font-size="90" fill="var(--blue)">⚙</text>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Sistema Industrial</div>
+    <h1 class="hero-title">
+      Rastreie cada motor.<br>
+      <span>Controle total</span> da manutenção.
+    </h1>
+    <p class="hero-desc">
+      Do chamado ao retorno ao setor — MotorTrack registra cada etapa do processoe mantém toda a equipe de manutenção alinhada em tempo real.
+    </p>
+    <div class="hero-actions">
+      <a class="hero-btn-primary" href="../../limited/index.html">
+        Acessar o Sistema
+      </a>
+      <a class="hero-btn-secondary" href="myequipment.html">
+        Consultar meu equipamento
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Serviços ── -->
+<section class="section">
+  <span class="section-eyebrow">O que fazemos</span>
+  <h2 class="section-title">Serviços de Manutenção</h2>
+  <p class="section-desc">
+    Do simples reparo à reconstrução completa — nossa equipe cobre todas
+    as necessidades de manutenção de motores elétricos industriais.
+  </p>
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="service-icon">🔧</span>
+      <div class="service-title">Análise e Diagnóstico</div>
+      <p class="service-desc">Inspeção elétrica, mecânica e medições precisas para identificar a causa raiz da falha com rapidez.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">⚡</span>
+      <div class="service-title">Reparo Elétrico</div>
+      <p class="service-desc">Rebobinamento, troca de capacitores, escovas e toda manutenção elétrica do motor.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">⚙</span>
+      <div class="service-title">Reparo Mecânico</div>
+      <p class="service-desc">Substituição de rolamentos, eixos, retentores e componentes mecânicos com peças de qualidade.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">📊</span>
+      <div class="service-title">Análise de Vibração</div>
+      <p class="service-desc">Medição e análise de vibração para detecção precoce de desbalanceamento e problemas mecânicos.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🌡</span>
+      <div class="service-title">Inspeção Termográfica</div>
+      <p class="service-desc">Identificação de pontos quentes, sobrecargas e falhas por termografia antes que causem paradas.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">📋</span>
+      <div class="service-title">Manutenção Preventiva</div>
+      <p class="service-desc">Planos de manutenção preventiva para prolongar a vida útil e evitar paradas inesperadas.</p>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:36px;">
+    <a class="hero-btn-secondary" href="services.html">Ver todos os serviços →</a>
+  </div>
+</section>
+
+<!-- ── Como Funciona ── -->
+<div class="section-full">
+  <div style="max-width:1100px;margin:0 auto;">
+    <span class="section-eyebrow">Como funciona</span>
+    <h2 class="section-title">Do chamado ao retorno</h2>
+    <p class="section-desc">O MotorTrack rastreia cada motor em etapas claras, garantindo visibilidade total do processo.</p>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-title">Abertura do Chamado</div>
+        <p class="how-desc">Motor chega à manutenção. Dados registrados, QR Code gerado e setor de origem notificado.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-title">Análise e Diagnóstico</div>
+        <p class="how-desc">Técnico realiza medições, identifica a causa raiz e registra o laudo técnico no sistema.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-title">Execução do Reparo</div>
+        <p class="how-desc">Reparo executado com registro de todas as peças utilizadas e intervenções realizadas.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <div class="how-title">Teste e Retorno</div>
+        <p class="how-desc">Teste final validado com medições. Motor aprovado e retornado ao setor de origem.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA ── -->
+<section class="section" style="text-align:center;">
+  <span class="section-eyebrow">Acesso rápido</span>
+  <h2 class="section-title">Consulte seu equipamento</h2>
+  <p class="section-desc" style="margin-left:auto;margin-right:auto;">
+    Com o código da Ordem de Serviço ou escaneando o QR Code, você acompanha em tempo real a situação do seu motor em manutenção.
+  </p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a class="hero-btn-primary" href="myequipment.html">Consultar agora</a>
+    <a class="hero-btn-secondary" href="aboutus.html">Conheça sobre nós →</a>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="pub-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">⚙ MotorTrack</div>
+      <p class="footer-brand-desc">
+        Manutenção de motores elétricos industriais.
+        Transparência e controle em cada etapa.
+      </p>
+    </div>
+    <div>
+      <div class="footer-col-title">Navegação</div>
+      <ul class="footer-links">
+        <li><a href="homepage.html">Início</a></li>
+        <li><a href="services.html">Serviços</a></li>
+        <li><a href="portfolio.html">Portfólio</a></li>
+        <li><a href="aboutus.html">Sobre</a></li>
+        <li><a href="contacts.html">Contato</a></li>
+        <li><a href="myequipment.html">Meu Equipamento</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Sistema</div>
+      <ul class="footer-links">
+        <li><a href="../../limited/index.html">Acessar Painel</a></li>
+        <li><a href="myequipment.html">Consultar Ordem de Serviço</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">Desenvolvido por Dextrom Tech</span>
+    <span class="footer-copy">© 2026 MotorTrack. Todos os direitos reservados.</span>
+    <span class="footer-senai">SENAI Ipatinga — CFP Rinaldo Campos Soares</span>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../../shared/js/firebase-config.js"></script>
+<script>
+  /* Tema */
+  const _th = document.getElementById('themeToggle');
+  const _h  = document.documentElement;
+  _th.addEventListener('click', () => {
+    _h.dataset.theme = _h.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('mt-tema', _h.dataset.theme);
+  });
+  const _ts = localStorage.getItem('mt-tema');
+  if (_ts) _h.dataset.theme = _ts;
+
+  /* Menu mobile */
+  function togglePubMenu() {
+    const m = document.getElementById('pub-mobile-nav');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+
+  /* Stats em tempo real */
+  db.collection('motores').onSnapshot(snap => {
+    const docs   = snap.docs.map(d => d.data());
+    const total  = docs.length;
+    const ativ   = docs.filter(d => d.status !== 'concluido').length;
+    const conc   = docs.filter(d => d.status === 'concluido').length;
+    const _s     = id => { const el = document.getElementById(id); if (el) el.textContent = id === 'pub-stat-total' ? total : id === 'pub-stat-andamento' ? ativ : conc; };
+    _s('pub-stat-total'); _s('pub-stat-andamento'); _s('pub-stat-concluido');
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="../../shared/js/qr-public.js"></script>
+</body>
+</html>
