@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato — MotorTrack</title>
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<nav class="pub-nav">
+  <a class="pub-nav-logo" href="homepage.html">⚙ MotorTrack</a>
+  <div class="pub-nav-links">
+    <a class="pub-nav-link" href="homepage.html">Início</a>
+    <a class="pub-nav-link" href="services.html">Serviços</a>
+    <a class="pub-nav-link" href="aboutus.html">Sobre</a>
+    <a class="pub-nav-link active" href="contacts.html">Contato</a>
+    <a class="pub-nav-link" href="myequipment.html">Meu Equipamento</a>
+  </div>
+  <div class="pub-nav-right">
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema"></button>
+    <a class="pub-btn-login" href="../../limited/index.html">Acessar Sistema</a>
+    <button class="pub-hamburger" onclick="togglePubMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div id="pub-mobile-nav"
+     style="display:none;position:fixed;top:64px;left:0;right:0;z-index:190;
+            background:var(--surface);border-bottom:2px solid var(--accent);
+            padding:8px 0;box-shadow:0 8px 24px rgba(0,0,0,.25);">
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="homepage.html">Início</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="services.html">Serviços</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="portfolio.html">Portfólio</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="aboutus.html">Sobre</a>
+  <a class="pub-nav-link active" style="display:block;padding:12px 24px;" href="contacts.html">Contato</a>
+  <a class="pub-nav-link" style="display:block;padding:12px 24px;" href="myequipment.html">Meu Equipamento</a>
+  <a class="pub-btn-login" style="display:block;margin:10px 24px 14px;text-align:center;"
+     href="../../limited/index.html">Acessar Sistema</a>
+</div>
+
+<!-- ── FAB QR (flutuante) ── -->
+<button class="pub-fab-qr" id="pub-fab-qr" onclick="QRPublic.abrir()" title="Ler QR Code do motor">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="3" height="3" rx=".5"/>
+    <rect x="18" y="14" width="3" height="3" rx=".5"/>
+    <rect x="14" y="18" width="3" height="3" rx=".5"/>
+    <rect x="18" y="18" width="3" height="3" rx=".5"/>
+  </svg>
+  <span>Ler QR</span>
+</button>
+
+<!-- Hero -->
+<div style="background:var(--surface);border-bottom:1px solid var(--border);padding:64px 40px 56px;text-align:center;">
+  <span class="section-eyebrow">Fale conosco</span>
+  <h1 class="section-title" style="font-size:clamp(28px,4vw,48px);">Contato</h1>
+  <p style="font-size:15px;color:var(--text2);max-width:520px;margin:0 auto;line-height:1.75;">
+    Tire suas dúvidas, solicite manutenção ou entre em contato com a equipe do suporte ao cliente.
+  </p>
+</div>
+
+<section class="section">
+  <div class="contacts-grid">
+
+    <!-- Informações -->
+    <div class="contact-info">
+      <h2 class="section-title" style="font-size:24px;margin-bottom:8px;">Informações</h2>
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;">
+        Nossa equipe de manutenção está disponível durante o horário comercial.
+        Para consultar Ordem de Serviço, utilize o sistema interno.
+      </p>
+
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label">Endereço</div>
+          <div class="contact-value">SENAI Ipatinga</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px;">CFP Rinaldo Campos Soares<br>Ipatinga — MG</div>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <div class="contact-icon">🕐</div>
+        <div>
+          <div class="contact-label">Horário de Atendimento</div>
+          <div class="contact-value">Segunda a Sexta</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px;">09h00 – 16h00</div>
+        </div>
+      </div>
+
+            <div class="contact-item">
+        <div class="contact-icon">🕐</div>
+        <div>
+          <div class="contact-label">Suporte ao Cliente</div>
+          <div class="contact-value">Ligue: 0800 123 4567</div>
+           <div class="contact-value">E-mail: suporte@motortrack.com</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px;">08h00 – 19h30</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(240,165,0,0.06);border:1px solid rgba(240,165,0,0.2);
+                  border-radius:var(--radius);padding:16px 18px;margin-top:8px;">
+        <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px;">
+          💡 Dica rápida
+        </div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;">
+          Para consultar o status de um motor em manutenção, use a página
+          <a href="myequipment.html" style="color:var(--accent);font-weight:600;">Meu Equipamento</a>
+          — basta informar o código da Ordem de Serviço ou escaniar o QR code.
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="contact-form">
+      <h3 style="font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:20px;">
+        Enviar Mensagem
+      </h3>
+      <div class="field-group">
+        <label>Nome Completo</label>
+        <input type="text" id="ct-nome" placeholder="Seu nome">
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>E-mail</label>
+          <input type="email" id="ct-email" placeholder="seu@email.com">
+        </div>
+        <div class="field-group">
+          <label>Setor / Empresa</label>
+          <input type="text" id="ct-setor" placeholder="Ex: Usinagem">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Assunto</label>
+        <select id="ct-assunto">
+          <option value="">Selecione...</option>
+          <option>Solicitar manutenção de motor</option>
+          <option>Dúvida sobre chamado em aberto</option>
+          <option>Prazo de retorno</option>
+          <option>Acesso ao sistema</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Mensagem</label>
+        <textarea id="ct-mensagem" placeholder="Descreva sua dúvida ou solicitação..." style="min-height:120px;"></textarea>
+      </div>
+      <button class="btn-primary" onclick="enviarContato()" id="btn-enviar-contato">
+        Enviar Mensagem
+      </button>
+  </div>
+</section>
+
+<footer class="pub-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">⚙ MotorTrack</div>
+      <p class="footer-brand-desc">Manutenção de motores elétricos industriais.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Navegação</div>
+      <ul class="footer-links">
+        <li><a href="homepage.html">Início</a></li>
+        <li><a href="services.html">Serviços</a></li>
+        <li><a href="portfolio.html">Portfólio</a></li>
+        <li><a href="aboutus.html">Sobre</a></li>
+        <li><a href="contacts.html">Contato</a></li>
+        <li><a href="myequipment.html">Meu Equipamento</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Sistema</div>
+      <ul class="footer-links">
+        <li><a href="../../limited/index.html">Acessar Painel</a></li>
+        <li><a href="myequipment.html">Consultar Ordem de Serviço</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">Desenvolvido por Dextrom Tech</span>
+    <span class="footer-copy">© 2026 MotorTrack. Todos os direitos reservados.</span>
+    <span class="footer-senai">SENAI Ipatinga — CFP Rinaldo Campos Soares</span>
+  </div>
+</footer>
+
+<script src="../../shared/js/toast.js"></script>
+<script>
+  const _th = document.getElementById('themeToggle');
+  const _h  = document.documentElement;
+  _th.addEventListener('click', () => {
+    _h.dataset.theme = _h.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('mt-tema', _h.dataset.theme);
+  });
+  const _ts = localStorage.getItem('mt-tema');
+  if (_ts) _h.dataset.theme = _ts;
+
+  function togglePubMenu() {
+    const m = document.getElementById('pub-mobile-nav');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function enviarContato() {
+    const nome     = document.getElementById('ct-nome').value.trim();
+    const email    = document.getElementById('ct-email').value.trim();
+    const assunto  = document.getElementById('ct-assunto').value;
+    const mensagem = document.getElementById('ct-mensagem').value.trim();
+
+    if (!nome)     { Toast.aviso('Informe seu nome.',     'Campo obrigatório'); return; }
+    if (!email)    { Toast.aviso('Informe seu e-mail.',   'Campo obrigatório'); return; }
+    if (!assunto)  { Toast.aviso('Selecione o assunto.',  'Campo obrigatório'); return; }
+    if (!mensagem) { Toast.aviso('Escreva sua mensagem.', 'Campo obrigatório'); return; }
+
+    const btn = document.getElementById('btn-enviar-contato');
+    btn.textContent = 'Enviando...';
+    btn.disabled    = true;
+
+    setTimeout(() => {
+      Toast.sucesso('Mensagem registrada! Entraremos em contato em breve.', 'Mensagem enviada');
+      ['ct-nome','ct-email','ct-setor','ct-assunto','ct-mensagem'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      btn.textContent = 'Enviar Mensagem';
+      btn.disabled    = false;
+    }, 900);
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="../../shared/js/qr-public.js"></script>
+</body>
+</html>
