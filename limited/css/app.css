@@ -686,6 +686,49 @@ tr:hover td      { background: rgba(240,165,0,0.025); }
   .table-wrapper tbody td[data-label="Ações"]::before { display: none; }
   .table-wrapper tbody td.empty-row   { justify-content: center; border: none; }
   .table-wrapper tbody td.empty-row::before { display: none; }
+
+  /* ─── Glassmorphism (somente mobile) ─── */
+  .topbar {
+    background: rgba(var(--surface-rgb), 0.65);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+  .topbar-nav.mobile-open {
+    background: rgba(var(--surface-rgb), 0.82);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+  }
+  .mobile-nav-overlay {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .fab-qr {
+    background: rgba(240,165,0,0.82);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  .fab-qr:hover { background: rgba(224,92,0,0.88); }
+  .stat-card,
+  .pipeline-col {
+    background: rgba(var(--surface-rgb), 0.55);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+  }
+  .table-wrapper {
+    background: rgba(var(--surface-rgb), 0.5);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+  }
+  .table-header,
+  .table-wrapper tbody tr {
+    background: rgba(var(--surface-rgb), 0.45);
+  }
+  .login-card {
+    background: rgba(var(--surface-rgb), 0.7);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    padding: 36px 26px 30px;
+  }
 }
 
 @media (max-width: 600px) {

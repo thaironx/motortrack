@@ -26,6 +26,8 @@
   --text3:     #4a5570;
   --shadow:    0 4px 24px rgba(0,0,0,0.45);
   --shadow-lg: 0 12px 48px rgba(0,0,0,0.6);
+  --surface-rgb: 24,28,39;
+  --bg-rgb:      15,17,23;
 }
 
 [data-theme="light"] {
@@ -47,6 +49,8 @@
   --text3:     #9aa0b8;
   --shadow:    0 2px 12px rgba(0,0,0,0.08);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --surface-rgb: 255,255,255;
+  --bg-rgb:      240,242,247;
 }
 
 /* ─── Tipografia ─── */
@@ -396,4 +400,21 @@ body {
   #toast-container      { left: 12px; right: 12px; top: 12px; }
   .toast                { min-width: unset; max-width: 100%; }
   .modal-xl, .modal-lg  { width: 100%; }
+}
+
+/* ─── Glassmorphism (somente mobile) ─── */
+@media (max-width: 700px) {
+  .modal-overlay {
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+  .modal {
+    background: rgba(var(--surface-rgb), 0.72);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--border);
+  }
+  .modal-header {
+    background: rgba(var(--surface-rgb), 0.55);
+  }
 }
